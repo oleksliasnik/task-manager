@@ -54,9 +54,16 @@ A modern, full-stack Task Management application featuring a responsive Vue 3 fr
    JWT_SECRET=...
    SUPABASE_URL=...
    SUPABASE_KEY=...
+   CLIENT_URL=http://localhost:5173
    ```
 
-3. **Run the Apps**:
+3. **Frontend Configuration**:
+   Create a `.env.local` file in `/client` (or use `.env`):
+   ```env
+   VITE_API_URL=http://localhost:3000/api
+   ```
+
+4. **Run the Apps**:
    In two separate terminals:
    - **Frontend**: `cd client && npm run dev` (development) or `npm run build && npm start` (production preview)
    - **Backend**: `cd server && npm run dev` (development) or `npm run build && npm start` (production)
