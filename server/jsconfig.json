@@ -1,8 +1,7 @@
 {
-  "compilerOptions": {
-    "checkJs": false
-  },
-  "include": ["**/*.js", "middlewares/checkAdmin.ts"],
-  "exclude": ["node_modules"]
+    "compilerOptions": {
+        "checkJs": false
+    },
+    "include": ["**/*.js", "middlewares/checkAdmin.ts"],
+    "exclude": ["node_modules"]
 }
-

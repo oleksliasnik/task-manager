@@ -2,7 +2,10 @@ import { Response } from 'express'
 import bcrypt from 'bcrypt'
 import { User } from '../models/userModel.js'
 import { generateToken } from '../utils/token.js'
-import { uploadAvatarToSupabase, deleteAvatarFromSupabase } from '../storage/supabase.storage.js'
+import {
+    uploadAvatarToSupabase,
+    deleteAvatarFromSupabase,
+} from '../storage/supabase.storage.js'
 import { CustomRequest } from '../types/index.js'
 
 export const register = async (req: CustomRequest, res: Response) => {
@@ -92,18 +95,26 @@ export const updateProfile = async (req: CustomRequest, res: Response) => {
                     await deleteAvatarFromSupabase(currentUser.avatarKey)
                 }
 
-                const { url, key } = await uploadAvatarToSupabase(req.file, userId.toString())
+                const { url, key } = await uploadAvatarToSupabase(
+                    req.file,
+                    userId.toString()
+                )
                 updateData.avatar = url
                 updateData.avatarKey = key
             } catch (uploadError: unknown) {
-                console.error('Error uploading avatar to Supabase:', uploadError)
+                console.error(
+                    'Error uploading avatar to Supabase:',
+                    uploadError
+                )
                 return res.status(500).json({
                     message: `Failed to upload avatar: ${(uploadError as Error).message}`,
                 })
             }
         }
 
-        const user = await User.findByIdAndUpdate(userId, updateData, { new: true })
+        const user = await User.findByIdAndUpdate(userId, updateData, {
+            new: true,
+        })
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' })
@@ -141,7 +152,9 @@ export const updatePassword = async (req: CustomRequest, res: Response) => {
         user.password = hash
         await user.save()
 
-        return res.status(200).json({ message: 'Password updated successfully' })
+        return res
+            .status(200)
+            .json({ message: 'Password updated successfully' })
     } catch (err: unknown) {
         console.error(err)
         return res.status(500).json({ message: 'Failed to update password' })
@@ -151,7 +164,9 @@ export const updatePassword = async (req: CustomRequest, res: Response) => {
 export const getAllUsers = async (req: CustomRequest, res: Response) => {
     try {
         if (req.user!.role !== 'admin') {
-            return res.status(403).json({ message: 'Access denied. Admin only.' })
+            return res
+                .status(403)
+                .json({ message: 'Access denied. Admin only.' })
         }
 
         const users = await User.find({}, '-password')
@@ -166,7 +181,9 @@ export const getAllUsers = async (req: CustomRequest, res: Response) => {
 export const getUserById = async (req: CustomRequest, res: Response) => {
     try {
         if (req.user!.role !== 'admin') {
-            return res.status(403).json({ message: 'Access denied. Admin only.' })
+            return res
+                .status(403)
+                .json({ message: 'Access denied. Admin only.' })
         }
 
         const user = await User.findById(req.params.id, '-password')
@@ -185,13 +202,17 @@ export const getUserById = async (req: CustomRequest, res: Response) => {
 export const deleteUser = async (req: CustomRequest, res: Response) => {
     try {
         if (req.user!.role !== 'admin') {
-            return res.status(403).json({ message: 'Access denied. Admin only.' })
+            return res
+                .status(403)
+                .json({ message: 'Access denied. Admin only.' })
         }
 
         const userId = req.params.id
 
         if (userId === req.user!._id.toString()) {
-            return res.status(400).json({ message: 'Cannot delete your own account' })
+            return res
+                .status(400)
+                .json({ message: 'Cannot delete your own account' })
         }
 
         const user = await User.findByIdAndDelete(userId)
@@ -206,5 +227,3 @@ export const deleteUser = async (req: CustomRequest, res: Response) => {
         return res.status(500).json({ message: 'Failed to delete user' })
     }
 }
-
-

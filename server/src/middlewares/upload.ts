@@ -22,5 +22,3 @@ export const upload = multer({
         fileSize: 500 * 1024, // 500KB limit
     },
 })
-
-

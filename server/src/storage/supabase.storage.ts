@@ -7,14 +7,19 @@ const supabaseUrl = process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_KEY
 
 if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase environment variables. Please set SUPABASE_URL and SUPABASE_KEY in .env file')
+    throw new Error(
+        'Missing Supabase environment variables. Please set SUPABASE_URL and SUPABASE_KEY in .env file'
+    )
 }
 
 const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey)
 
 const BUCKET_NAME = 'avatars'
 
-export async function uploadAvatarToSupabase(file: any, userId: string): Promise<{ url: string, key: string }> {
+export async function uploadAvatarToSupabase(
+    file: any,
+    userId: string
+): Promise<{ url: string; key: string }> {
     try {
         const fileExt = file.originalname.split('.').pop()
         const fileName = `${userId}-${Date.now()}-${Math.round(Math.random() * 1e9)}.${fileExt}`
@@ -24,7 +29,7 @@ export async function uploadAvatarToSupabase(file: any, userId: string): Promise
             .from(BUCKET_NAME)
             .upload(filePath, file.buffer, {
                 contentType: file.mimetype,
-                upsert: false
+                upsert: false,
             })
 
         if (error) {
@@ -38,7 +43,7 @@ export async function uploadAvatarToSupabase(file: any, userId: string): Promise
 
         return {
             url: urlData.publicUrl,
-            key: filePath
+            key: filePath,
         }
     } catch (error) {
         console.error('Error in uploadAvatarToSupabase:', error)
@@ -46,7 +51,9 @@ export async function uploadAvatarToSupabase(file: any, userId: string): Promise
     }
 }
 
-export async function deleteAvatarFromSupabase(avatarKey: string): Promise<boolean> {
+export async function deleteAvatarFromSupabase(
+    avatarKey: string
+): Promise<boolean> {
     try {
         if (!avatarKey) {
             return true

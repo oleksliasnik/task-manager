@@ -3,9 +3,16 @@ import { User } from '../models/userModel.js'
 import { verifyToken } from '../utils/token.js'
 import { CustomRequest } from '../types/index.js'
 
-export default async (req: CustomRequest, res: Response, next: NextFunction) => {
+export default async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+) => {
     try {
-        if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
+        if (
+            !req.headers.authorization ||
+            !req.headers.authorization.startsWith('Bearer ')
+        ) {
             return res.status(401).json({ message: 'Not authorized, no token' })
         }
 
@@ -15,7 +22,9 @@ export default async (req: CustomRequest, res: Response, next: NextFunction) => 
         const user = await User.findById(decoded._id).select('-password')
 
         if (!user) {
-            return res.status(401).json({ message: 'Not authorized, user not found' })
+            return res
+                .status(401)
+                .json({ message: 'Not authorized, user not found' })
         }
 
         req.user = user.toObject()
@@ -25,5 +34,3 @@ export default async (req: CustomRequest, res: Response, next: NextFunction) => 
         res.status(401).json({ message: 'Not authorized, token failed' })
     }
 }
-
-

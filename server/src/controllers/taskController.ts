@@ -21,7 +21,9 @@ export const createTask = async (req: CustomRequest, res: Response) => {
             title = `Task ${dateStr} ${timeStr}`
         }
 
-        const maxOrderTask = await Task.findOne({ createBy: userId }).sort({ order: -1 })
+        const maxOrderTask = await Task.findOne({ createBy: userId }).sort({
+            order: -1,
+        })
         const newOrder = maxOrderTask ? maxOrderTask.order + 1000 : 1000
 
         const taskObj = {
@@ -37,9 +39,10 @@ export const createTask = async (req: CustomRequest, res: Response) => {
         return res.status(201).json(task)
     } catch (err: unknown) {
         console.error('Error creating task:', err)
-        return res
-            .status(400)
-            .json({ message: 'Failed to create task', error: (err as Error).message })
+        return res.status(400).json({
+            message: 'Failed to create task',
+            error: (err as Error).message,
+        })
     }
 }
 
@@ -64,9 +67,10 @@ export const updateTask = async (req: CustomRequest, res: Response) => {
         return res.status(200).json(task)
     } catch (err: unknown) {
         console.error(err)
-        res
-            .status(400)
-            .json({ message: 'Failed to update the task', error: (err as Error).message })
+        res.status(400).json({
+            message: 'Failed to update the task',
+            error: (err as Error).message,
+        })
     }
 }
 
@@ -132,9 +136,10 @@ export const getTask = async (req: CustomRequest, res: Response) => {
         return res.status(200).json(task)
     } catch (err: unknown) {
         console.error(err)
-        res
-            .status(400)
-            .json({ message: 'Failed to find task', error: (err as Error).message })
+        res.status(400).json({
+            message: 'Failed to find task',
+            error: (err as Error).message,
+        })
     }
 }
 
@@ -146,15 +151,18 @@ export const getAllTasks = async (req: CustomRequest, res: Response) => {
         return res.status(200).json(tasks)
     } catch (err: unknown) {
         console.error(err)
-        res
-            .status(400)
-            .json({ message: 'Failed to find all tasks', error: (err as Error).message })
+        res.status(400).json({
+            message: 'Failed to find all tasks',
+            error: (err as Error).message,
+        })
     }
 }
 
 export const reorderTasks = async (req: CustomRequest, res: Response) => {
     try {
-        const { tasks } = req.body as { tasks: { _id: string; order: number }[] }
+        const { tasks } = req.body as {
+            tasks: { _id: string; order: number }[]
+        }
         const userId = req.user!._id
 
         if (!tasks || !Array.isArray(tasks)) {
@@ -173,10 +181,9 @@ export const reorderTasks = async (req: CustomRequest, res: Response) => {
         return res.status(200).json({ message: 'Tasks reordered successfully' })
     } catch (err: unknown) {
         console.error(err)
-        res
-            .status(400)
-            .json({ message: 'Failed to reorder tasks', error: (err as Error).message })
+        res.status(400).json({
+            message: 'Failed to reorder tasks',
+            error: (err as Error).message,
+        })
     }
 }
-
-

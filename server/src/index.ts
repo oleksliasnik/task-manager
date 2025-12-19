@@ -20,5 +20,3 @@ app.listen(port, () => {
         `Server listening on port ${port} and started at http://localhost:${port}`
     )
 })
-
-

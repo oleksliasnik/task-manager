@@ -7,7 +7,12 @@ const router = express.Router()
 
 router.post('/auth/register', authController.register)
 router.post('/auth/login', authController.login)
-router.put('/auth/profile', checkAuth, upload.single('avatar'), authController.updateProfile)
+router.put(
+    '/auth/profile',
+    checkAuth,
+    upload.single('avatar'),
+    authController.updateProfile
+)
 router.put('/auth/password', checkAuth, authController.updatePassword)
 router.get('/users', checkAuth, authController.getAllUsers)
 router.get('/users/:id', checkAuth, authController.getUserById)

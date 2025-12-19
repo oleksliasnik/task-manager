@@ -54,5 +54,3 @@ export const Task: Model<TaskDocument> = mongoose.model<TaskDocument>(
     'Task',
     taskSchema
 )
-
-

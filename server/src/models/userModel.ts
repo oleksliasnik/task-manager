@@ -53,5 +53,3 @@ export const User: Model<UserDocument> = mongoose.model<UserDocument>(
     'User',
     userSchema
 )
-
-
