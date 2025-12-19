@@ -10,9 +10,11 @@ const port = process.env.PORT || 3000
 const clientUrl = process.env.CLIENT_URL
 
 // middleware
-app.use(cors({
-    origin: clientUrl,
-}))
+app.use(
+    cors({
+        origin: clientUrl,
+    })
+)
 app.use(express.json())
 
 app.use('/api', authRouter)
