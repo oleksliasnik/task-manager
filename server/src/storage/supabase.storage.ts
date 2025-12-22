@@ -3,16 +3,19 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_KEY
+const supabaseUrl = process.env.SUPABASE_URL as string
+const supabaseKey = process.env.SUPABASE_KEY as string
 
-if (!supabaseUrl || !supabaseKey) {
+if ((!supabaseUrl || !supabaseKey) && process.env.NODE_ENV !== 'test') {
     throw new Error(
         'Missing Supabase environment variables. Please set SUPABASE_URL and SUPABASE_KEY in .env file'
     )
 }
 
-const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey)
+const supabase: SupabaseClient = createClient(
+    supabaseUrl || 'http://placeholder.url',
+    supabaseKey || 'placeholder-key'
+)
 
 const BUCKET_NAME = 'avatars'
 
