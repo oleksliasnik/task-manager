@@ -17,11 +17,19 @@ app.use(
 )
 app.use(express.json())
 
+app.get('/api/health', (_req, res) => {
+    res.status(200).json({ status: 'ok' })
+})
+
 app.use('/api', authRouter)
 app.use('/api', taskRouter)
 
-app.listen(port, () => {
-    console.log(
-        `Server listening on port ${port} and started at http://localhost:${port}`
-    )
-})
+export { app }
+
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(port, () => {
+        console.log(
+            `Server listening on port ${port} and started at http://localhost:${port}`
+        )
+    })
+}
