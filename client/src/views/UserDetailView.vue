@@ -1,77 +1,68 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useAuthStore } from '../stores/auth'
-import { useRouter, useRoute } from 'vue-router'
-import { authApi } from '../services/api'
+import { ref, onMounted } from "vue";
+import { useAuthStore } from "../stores/auth";
+import { useRouter, useRoute } from "vue-router";
+import { authApi } from "../services/api";
+import { User } from "../types/user";
 
-const authStore = useAuthStore()
-const router = useRouter()
-const route = useRoute()
+const authStore = useAuthStore();
+const router = useRouter();
+const route = useRoute();
 
-interface User {
-  _id: string
-  username: string
-  email: string
-  avatar?: string
-  role: string
-  firstName?: string
-  lastName?: string
-}
-
-const user = ref<User | null>(null)
-const loading = ref(false)
-const error = ref('')
-const showDeleteModal = ref(false)
+const user = ref<User | null>(null);
+const loading = ref(false);
+const error = ref("");
+const showDeleteModal = ref(false);
 
 onMounted(async () => {
-  if (authStore.user?.role !== 'admin') {
-    router.push('/tasks')
-    return
+  if (authStore.user?.role !== "admin") {
+    router.push("/tasks");
+    return;
   }
-  
-  await fetchUser()
-})
+
+  await fetchUser();
+});
 
 async function fetchUser() {
-  loading.value = true
-  error.value = ''
-  
+  loading.value = true;
+  error.value = "";
+
   try {
     if (!authStore.token) {
-      throw new Error('Not authenticated')
+      throw new Error("Not authenticated");
     }
-    
-    const userId = route.params.id as string
-    const response = await authApi.getUserById(authStore.token, userId)
-    user.value = response.user
+
+    const userId = route.params.id as string;
+    const response = await authApi.getUserById(authStore.token, userId);
+    user.value = response.user;
   } catch (err: any) {
-    error.value = err.message || 'Failed to fetch user'
+    error.value = err.message || "Failed to fetch user";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 function goBack() {
-  router.push('/admin')
+  router.push("/admin");
 }
 
 function openDeleteModal() {
-  showDeleteModal.value = true
+  showDeleteModal.value = true;
 }
 
 function closeDeleteModal() {
-  showDeleteModal.value = false
+  showDeleteModal.value = false;
 }
 
 async function confirmDelete() {
-  if (!user.value || !authStore.token) return
+  if (!user.value || !authStore.token) return;
 
   try {
-    await authApi.deleteUser(authStore.token, user.value._id)
-    router.push('/admin')
+    await authApi.deleteUser(authStore.token, user.value._id);
+    router.push("/admin");
   } catch (err: any) {
-    error.value = err.message || 'Failed to delete user'
-    closeDeleteModal()
+    error.value = err.message || "Failed to delete user";
+    closeDeleteModal();
   }
 }
 </script>
@@ -81,7 +72,19 @@ async function confirmDelete() {
     <div class="user-detail-container glass-panel">
       <div class="header">
         <button @click="goBack" class="btn-back">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m15 18-6-6 6-6" />
+          </svg>
           Back to Users
         </button>
         <h1>User Details</h1>
@@ -97,9 +100,13 @@ async function confirmDelete() {
       <div v-else-if="user" class="user-content">
         <div class="user-header">
           <div class="user-avatar-large">
-            <img 
-              v-if="user.avatar" 
-              :src="user.avatar.startsWith('http') ? user.avatar : `http://localhost:3000${user.avatar}`" 
+            <img
+              v-if="user.avatar"
+              :src="
+                user.avatar.startsWith('http')
+                  ? user.avatar
+                  : `http://localhost:3000${user.avatar}`
+              "
               :alt="user.username"
               class="avatar-img"
             />
@@ -123,7 +130,9 @@ async function confirmDelete() {
             </div>
             <div class="info-item" v-if="user.firstName || user.lastName">
               <span class="info-label">Full Name</span>
-              <span class="info-value">{{ user.firstName }} {{ user.lastName }}</span>
+              <span class="info-value"
+                >{{ user.firstName }} {{ user.lastName }}</span
+              >
             </div>
             <div class="info-item">
               <span class="info-label">Email</span>
@@ -138,7 +147,21 @@ async function confirmDelete() {
 
         <div class="actions" v-if="user._id !== authStore.user?._id">
           <button @click="openDeleteModal" class="btn btn-danger">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+            </svg>
             Delete User
           </button>
         </div>
@@ -152,12 +175,18 @@ async function confirmDelete() {
           <button @click="closeDeleteModal" class="btn-close">×</button>
         </div>
         <div class="modal-body">
-          <p>Are you sure you want to delete user <strong>{{ user?.username }}</strong>?</p>
+          <p>
+            Are you sure you want to delete user
+            <strong>{{ user?.username }}</strong
+            >?
+          </p>
           <p class="warning-text">This action cannot be undone.</p>
         </div>
         <div class="modal-footer">
           <button @click="confirmDelete" class="btn btn-danger">Delete</button>
-          <button @click="closeDeleteModal" class="btn btn-secondary">Cancel</button>
+          <button @click="closeDeleteModal" class="btn btn-secondary">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
@@ -248,7 +277,9 @@ async function confirmDelete() {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-message {
@@ -382,7 +413,7 @@ async function confirmDelete() {
   background: var(--bg-card-hover);
   color: var(--text-main);
   border: 1px solid transparent;
-} 
+}
 
 .btn-secondary:hover {
   background: var(--border-color);
