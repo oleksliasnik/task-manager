@@ -40,7 +40,19 @@ function handleLogout() {
 <template>
   <header class="app-header glass-panel">
     <div class="header-content">
-      <h1>Task Manager</h1>
+      <div class="logo-group">
+        <h1>Task Manager</h1>
+        <div
+          v-if="taskStore.processing || taskStore.syncQueue.length > 0"
+          class="global-sync-status"
+          title="Syncing changes..."
+        >
+          <div class="sync-spinner"></div>
+          <span v-if="taskStore.syncQueue.length > 0" class="sync-count">{{
+            taskStore.syncQueue.length
+          }}</span>
+        </div>
+      </div>
       <div class="header-actions">
         <button @click="$emit('create-task')" class="btn btn-primary">
           + New Task
@@ -270,6 +282,12 @@ function handleLogout() {
   flex-wrap: wrap;
 }
 
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .app-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
@@ -282,6 +300,38 @@ function handleLogout() {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.global-sync-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(var(--color-primary-rgb), 0.1);
+  padding: 0.25rem 0.6rem;
+  border-radius: 99px;
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid rgba(var(--color-primary-rgb), 0.2);
+}
+
+.sync-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(var(--color-primary-rgb), 0.3);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin-header 1s linear infinite;
+}
+
+@keyframes spin-header {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sync-count {
+  font-variant-numeric: tabular-nums;
 }
 
 .header-actions {
