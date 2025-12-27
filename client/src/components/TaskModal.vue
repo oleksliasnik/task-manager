@@ -1,57 +1,69 @@
 <script setup lang="ts">
-
 const props = defineProps<{
-  show: boolean
-  title: string
-  submitLabel?: string
-  taskTitle: string
-  taskDescription: string
-  taskDueDate: string
-}>()
+  show: boolean;
+  title: string;
+  submitLabel?: string;
+  taskTitle: string;
+  taskDescription: string;
+  taskDueDate: string;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:taskTitle', value: string): void
-  (e: 'update:taskDescription', value: string): void
-  (e: 'update:taskDueDate', value: string): void
-  (e: 'close'): void
-  (e: 'submit'): void
-}>()
+  (e: "update:taskTitle", value: string): void;
+  (e: "update:taskDescription", value: string): void;
+  (e: "update:taskDueDate", value: string): void;
+  (e: "close"): void;
+  (e: "submit"): void;
+}>();
 </script>
 
 <template>
-  <div v-if="show" class="modal-overlay" @click.self="$emit('close')">
+  <div v-if="show" class="modal-overlay" @click.self="emit('close')">
     <div class="modal glass-panel">
       <div class="modal-header">
         <h2>{{ title }}</h2>
-        <button @click="$emit('close')" class="btn-close">×</button>
+        <button @click="emit('close')" class="btn-close">×</button>
       </div>
-      <form @submit.prevent="$emit('submit')" class="modal-body">
+      <form @submit.prevent="emit('submit')" class="modal-body">
         <input
           :value="taskTitle"
-          @input="$emit('update:taskTitle', ($event.target as HTMLInputElement).value)"
+          @input="
+            emit('update:taskTitle', ($event.target as HTMLInputElement).value)
+          "
           class="input-field task-input"
           placeholder="Task Title"
-          required
         />
         <input
           type="datetime-local"
           :value="taskDueDate"
-          @input="$emit('update:taskDueDate', ($event.target as HTMLInputElement).value)"
+          @input="
+            emit(
+              'update:taskDueDate',
+              ($event.target as HTMLInputElement).value
+            )
+          "
           class="input-field task-input"
         />
         <textarea
           :value="taskDescription"
-          @input="$emit('update:taskDescription', ($event.target as HTMLInputElement).value)"
+          @input="
+            emit(
+              'update:taskDescription',
+              ($event.target as HTMLInputElement).value
+            )
+          "
           class="input-field task-textarea"
           placeholder="Enter task description..."
           rows="4"
           required
         ></textarea>
         <div class="modal-footer">
-          <button type="button" @click="$emit('close')" class="btn btn-danger">
+          <button type="button" @click="emit('close')" class="btn btn-danger">
             Cancel
           </button>
-          <button type="submit" class="btn btn-primary">{{ submitLabel || 'Save' }}</button>
+          <button type="submit" class="btn btn-primary">
+            {{ submitLabel || "Save" }}
+          </button>
         </div>
       </form>
     </div>

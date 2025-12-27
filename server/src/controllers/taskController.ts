@@ -4,44 +4,45 @@ import { CustomRequest } from '../types/index.js'
 
 export const createTask = async (req: CustomRequest, res: Response) => {
     try {
-        let { title, description, dueDate } = req.body
         const userId = req.user!._id
 
-        if (!title || title.trim() === '') {
+        let { title, description, dueDate, status, completed } = req.body
+
+        if (!title || !title.trim()) {
             const now = new Date()
             const dateStr = now.toLocaleDateString('uk-UA', {
                 day: '2-digit',
                 month: '2-digit',
                 year: '2-digit',
             })
-            const timeStr = now.toLocaleTimeString('uk-UA', {
-                hour: '2-digit',
-                minute: '2-digit',
-            })
-            title = `Task ${dateStr} ${timeStr}`
+            title = `Task ${dateStr} ${now.toLocaleTimeString('uk-UA')}`
         }
 
         const maxOrderTask = await Task.findOne({ createBy: userId }).sort({
             order: -1,
         })
-        const newOrder = maxOrderTask ? maxOrderTask.order + 1000 : 1000
+        const newOrder = maxOrderTask ? maxOrderTask.order + 1 : 1
 
         const taskObj = {
             title,
-            description,
-            createBy: userId as any,
-            dueDate,
+            description: description?.trim() || 'No description',
+            createBy: userId,
             order: newOrder,
+            completed: !!completed,
+            status: ['pending', 'in_progress', 'completed'].includes(status)
+                ? status
+                : 'pending',
+            dueDate:
+                dueDate && !isNaN(Date.parse(dueDate)) ? dueDate : undefined,
         }
 
         const task = await Task.create(taskObj)
 
         return res.status(201).json(task)
-    } catch (err: unknown) {
-        console.error('Error creating task:', err)
+    } catch (e) {
+        console.error(e)
         return res.status(400).json({
             message: 'Failed to create task',
-            error: (err as Error).message,
         })
     }
 }
@@ -104,8 +105,7 @@ export const getTasksByUserId = async (req: CustomRequest, res: Response) => {
         if (sortQuery === 'manual') {
             sortOption = { order: 1 }
         } else {
-            const sortOrder = sortQuery === 'desc' ? -1 : 1
-            sortOption = { date: sortOrder }
+            sortOption = { date: sortQuery === 'desc' ? -1 : 1 }
         }
 
         const tasks = await Task.find({
